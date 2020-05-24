@@ -6,8 +6,15 @@
 
 namespace xcord
 {
-	std::string Discord::api_ = fmt::format("https://discord.com/api/v{}/", Discord::api_version);
-	std::string Discord::gateway_;
+	Discord* Discord::get()
+	{
+		static Discord instance;
+		return &instance;
+	}
+
+	Discord::Discord() : api_(fmt::format("https://discord.com/api/v{}/", api_version))
+	{
+	}
 
 	std::string& Discord::api()
 	{
