@@ -16,6 +16,7 @@ In the vcpkg directory, install the following packages:
   
 After installing the packages successfully, go to your xcord directory and generate the project with cmake:
 ```
+git submodule update
 mkdir build
 cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE=path/to/vcpkg/scripts/buildsystems/vcpkg.cmake
