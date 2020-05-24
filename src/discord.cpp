@@ -9,12 +9,12 @@ namespace xcord
 	std::string Discord::api_ = fmt::format("https://discord.com/api/v{}/", Discord::api_version);
 	std::string Discord::gateway_;
 
-	std::string Discord::api()
+	std::string& Discord::api()
 	{
 		return api_;
 	}
 
-	std::string Discord::gateway()
+	std::string& Discord::gateway()
 	{
 		if (gateway_.empty())
 		{
