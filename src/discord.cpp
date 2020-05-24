@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <fmt/format.h>
 #include <rapidjson/document.h>
 #include <cpr/cpr.h>
