@@ -23,7 +23,7 @@ namespace xcord
 		explicit Inflator(const Inflator&) = default; Inflator& operator=(const Inflator&) = default;
 		explicit Inflator(Inflator&&) = default; Inflator& operator=(Inflator&&) = default;
 
-		static bool IsDeflated(const std::string& deflated);
+		static bool is_deflated(const std::string& deflated);
 	private:
 		std::thread worker_;
 	};

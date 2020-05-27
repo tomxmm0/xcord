@@ -6,7 +6,7 @@ namespace xcord
 	Inflator::Inflator(const std::string& deflated, const std::function<void(const std::string)>& cb)
 	{
 		worker_ = std::thread([deflated, cb]() -> void {
-			if (IsDeflated(deflated))
+			if (is_deflated(deflated))
 			{
 				z_stream stream = { 0 };
 				assert(inflateInit(&stream) == Z_OK);
@@ -50,7 +50,7 @@ namespace xcord
 		worker_.join();
 	}
 
-	bool Inflator::IsDeflated(const std::string& deflated)
+	bool Inflator::is_deflated(const std::string& deflated)
 	{
 		constexpr std::array zlib_suffix{ '\xff', '\xff', '\x00', '\x00' };
 
