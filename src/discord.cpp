@@ -14,28 +14,15 @@ namespace xcord
 
 	Discord::Discord() : api_(fmt::format("https://discord.com/api/v{}/", api_version))
 	{
-	}
+		const auto res = cpr::Get(cpr::Url(fmt::format("{}/gateway", api_)));
 
-	std::string& Discord::api()
-	{
-		return api_;
-	}
+		rapidjson::Document document;
+		document.Parse(res.text.data());
 
-	std::string& Discord::gateway()
-	{
-		if (gateway_.empty())
-		{
-			auto res = cpr::Get(cpr::Url(fmt::format("{}/gateway", api_)));
+		assert(document.IsObject());
+		assert(document.HasMember("url"));
+		assert(document["url"].IsString());
 
-			rapidjson::Document document;
-			document.Parse(res.text.data());
-
-			assert(document.HasMember("url"));
-			assert(document["url"].IsString());
-	
-			gateway_ = document["url"].GetString();
-		}
-
-		return gateway_;
+		gateway_ = fmt::format("{}/?v={}", document["url"].GetString(), api_version);
 	}
 }

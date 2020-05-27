@@ -13,8 +13,15 @@ namespace xcord
 		static Discord* get();
 		Discord();
 
-		std::string& api();
-		std::string& gateway();
+		inline std::string& api()
+		{
+			return api_;
+		}
+
+		inline std::string& gateway()
+		{
+			return gateway_;
+		}
 	private:
 		std::string api_;
 		std::string gateway_;
