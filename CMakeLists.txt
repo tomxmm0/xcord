@@ -18,6 +18,9 @@ include_directories(include)
 
 add_compile_definitions(BUILDING_XCORD)
 
+find_package(OpenSSL REQUIRED)
+target_link_libraries(xcord PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+
 find_package(cpr CONFIG REQUIRED)
 target_link_libraries(xcord PRIVATE cpr)
 
@@ -31,5 +34,10 @@ include_directories(deps/asio/asio/include)
 add_compile_definitions(ASIO_STANDALONE _WEBSOCKETPP_CPP11_RANDOM_DEVICE_ _WEBSOCKETPP_CPP11_TYPE_TRAITS_)
 
 if (ENABLE_UNITTEST)
-    add_subdirectory(unittest)
+    file(GLOB UNITTEST_SOURCE "unittest/**.cpp" "unittest/**.hpp")
+    add_executable(unittest ${UNITTEST_SOURCE})
+
+    target_link_libraries(unittest PRIVATE xcord)
+    target_link_libraries(unittest PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 endif()
+
