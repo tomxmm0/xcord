@@ -7,8 +7,6 @@
 #include <functional>
 #include <thread>
 
-#include <zlib.h>
-
 #include <websocketpp/config/asio_client.hpp>
 #include <websocketpp/client.hpp>
 
@@ -35,7 +33,6 @@ namespace xcord
 		using ws_handle = websocketpp::connection_hdl;
 
 		using message_ptr = websocketpp::config::asio_tls_client::message_type::ptr;
-		using context_ptr = std::shared_ptr<asio::ssl::context>;
 
 		Websocket();
 		~Websocket();

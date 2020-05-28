@@ -14,17 +14,7 @@ namespace xcord
 		client_.init_asio();
 
 		client_.set_tls_init_handler([this](const websocketpp::connection_hdl) -> auto {
-			const Websocket::context_ptr context = std::make_shared<asio::ssl::context>(asio::ssl::context::sslv23);
-			websocketpp::lib::error_code ec;
-
-			context->set_options(asio::ssl::context::default_workarounds |
-				asio::ssl::context::no_sslv2 |
-				asio::ssl::context::no_sslv3 |
-				asio::ssl::context::single_dh_use, ec);
-
-			assert(!ec);
-
-			return context;
+			return std::make_shared<asio::ssl::context>(asio::ssl::context::tlsv13);
 		});
 
 		client_.set_open_handler([this](const websocketpp::connection_hdl hdl) -> auto {
@@ -32,7 +22,9 @@ namespace xcord
 		});
 
 		client_.set_message_handler([this](const websocketpp::connection_hdl, const message_ptr message) -> auto {
-			// TODO
+			Inflator(message->get_payload(), [](const std::string message) -> void {
+				fmt::print("{}\n", message);
+			});
 		});
 	}
 

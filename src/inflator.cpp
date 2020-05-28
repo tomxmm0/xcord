@@ -1,4 +1,6 @@
 #include <cassert>
+#include <zlib.h>
+
 #include <xcord/websocket.hpp>
 
 namespace xcord
