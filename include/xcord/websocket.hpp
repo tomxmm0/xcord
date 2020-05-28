@@ -15,15 +15,8 @@ namespace xcord
 	class EXPORT Inflator
 	{
 	public:
-		Inflator(const std::string& deflated, const std::function<void(const std::string)>& cb);
-		~Inflator();
-
-		explicit Inflator(const Inflator&) = default; Inflator& operator=(const Inflator&) = default;
-		explicit Inflator(Inflator&&) = default; Inflator& operator=(Inflator&&) = default;
-
+		Inflator(const std::string& deflated, const std::function<void(const std::string inflated)>& callback);
 		static bool is_deflated(const std::string& deflated);
-	private:
-		std::thread worker_;
 	};
 
 	class EXPORT Websocket

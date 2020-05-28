@@ -22,8 +22,8 @@ namespace xcord
 		});
 
 		client_.set_message_handler([this](const websocketpp::connection_hdl, const message_ptr message) -> auto {
-			Inflator(message->get_payload(), [](const std::string message) -> void {
-				fmt::print("{}\n", message);
+			Inflator inflator(message->get_payload(), [](const std::string inflated) -> void {
+				fmt::print("{}\n", inflated);
 			});
 		});
 	}
@@ -36,7 +36,7 @@ namespace xcord
 	void Websocket::connect()
 	{
 		websocketpp::lib::error_code e;
-		const auto con = client_.get_connection(fmt::format("{}&encoding=json&compress=zlib-stream", Discord::get()->gateway()), e);
+		const auto con = client_.get_connection(fmt::format("{}&encoding=json", Discord::get()->gateway()), e);
 
 		assert(!e);
 		

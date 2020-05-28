@@ -5,9 +5,9 @@
 
 namespace xcord
 {
-	Inflator::Inflator(const std::string& deflated, const std::function<void(const std::string)>& cb)
+	Inflator::Inflator(const std::string& deflated, const std::function<void(const std::string inflated)>& callback)
 	{
-		worker_ = std::thread([deflated, cb]() -> void {
+		std::thread([deflated, callback]() -> void {
 			if (is_deflated(deflated))
 			{
 				z_stream stream = { 0 };
@@ -33,27 +33,27 @@ namespace xcord
 
 				/*
 					Z_BUF_ERROR indicates that the given buffer was too small for the inflated chunck.
-					It is not fatal and `inflate` can be called once again with more output space.
+					It is not fatal and `::inflate` can be called once again with more output space.
 				*/
 				assert(result == Z_STREAM_END || result == Z_BUF_ERROR);
 				assert(inflateEnd(&stream) == Z_OK);
 
-				cb(std::move(inflated));
+				callback(std::move(inflated));
 			}
 			else
 			{
-				cb(deflated);
+				callback(deflated);
 			}
-		});
-	}
-
-	Inflator::~Inflator()
-	{
-		worker_.join();
+		}).detach();
 	}
 
 	bool Inflator::is_deflated(const std::string& deflated)
 	{
+		if (deflated.size() < 4)
+		{
+			return false;
+		}
+
 		constexpr std::array zlib_suffix{ '\xff', '\xff', '\x00', '\x00' };
 
 		for (auto i = 0u; i < zlib_suffix.size(); ++i)
