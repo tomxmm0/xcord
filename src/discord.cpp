@@ -6,10 +6,10 @@
 
 namespace xcord
 {
-	Discord* Discord::get()
+	Discord& Discord::get()
 	{
 		static Discord instance;
-		return &instance;
+		return instance;
 	}
 
 	Discord::Discord() : api_(fmt::format("https://discord.com/api/v{}/", api_version))
@@ -19,10 +19,14 @@ namespace xcord
 		rapidjson::Document document;
 		document.Parse(res.text.data());
 
-		assert(document.IsObject());
-		assert(document.HasMember("url"));
-		assert(document["url"].IsString());
+		if (document.IsObject() && document.HasMember("url"))
+		{
+			const auto& url = document["url"];
 
-		gateway_ = fmt::format("{}/?v={}", document["url"].GetString(), api_version);
+			if (url.IsString())
+			{
+				gateway_ = fmt::format("{}/?v={}", url.GetString(), api_version);
+			}
+		}
 	}
 }

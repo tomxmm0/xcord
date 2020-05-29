@@ -5,7 +5,10 @@
 #include <memory>
 #include <string>
 #include <functional>
-#include <thread>
+#include <optional>
+#include <mutex>
+
+#include <zlib.h>
 
 #include <websocketpp/config/asio_client.hpp>
 #include <websocketpp/client.hpp>
@@ -15,8 +18,19 @@ namespace xcord
 	class EXPORT Inflator
 	{
 	public:
-		Inflator(const std::string& deflated, const std::function<void(const std::string inflated)>& callback);
-		static bool is_deflated(const std::string& deflated);
+		Inflator();
+		~Inflator();
+
+		explicit Inflator(const Inflator&) = default; Inflator& operator=(const Inflator&) = default;
+		explicit Inflator(Inflator&&) = default; Inflator& operator=(Inflator&&) = default;
+
+		std::optional<std::string> inflate(const std::string& deflated);
+		static bool is_deflated(const std::string_view& deflated);
+	private:
+		z_stream stream_ = { 0 };
+
+		std::mutex mutex_;
+		std::atomic_bool active_ = false;
 	};
 
 	class EXPORT Websocket
@@ -39,7 +53,10 @@ namespace xcord
 		ws_client client_;
 		ws_handle handle_;
 
+		Inflator inflator_;
+
 		void cleanup_();
+		bool connected_ = false;
 	};
 }
 

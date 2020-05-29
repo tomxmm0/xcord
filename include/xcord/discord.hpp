@@ -10,15 +10,15 @@ namespace xcord
 	public:
 		static constexpr int api_version = 6;
 
-		static Discord* get();
+		static Discord& get();
 		Discord();
 
-		inline std::string& api()
+		inline std::string_view api() const
 		{
 			return api_;
 		}
 
-		inline std::string& gateway()
+		inline std::string_view gateway() const
 		{
 			return gateway_;
 		}

@@ -1,53 +1,61 @@
-#include <cassert>
-#include <zlib.h>
-
+#include <array>
 #include <xcord/websocket.hpp>
 
 namespace xcord
 {
-	Inflator::Inflator(const std::string& deflated, const std::function<void(const std::string inflated)>& callback)
+	Inflator::Inflator()
 	{
-		std::thread([deflated, callback]() -> void {
+		if (inflateInit(&stream_) == Z_OK)
+		{
+			active_ = true;
+		}
+	}
+
+	Inflator::~Inflator()
+	{
+		active_ = false;
+
+		std::lock_guard<std::mutex> lock(mutex_);
+		inflateEnd(&stream_);
+	}
+
+	std::optional<std::string> Inflator::inflate(const std::string& deflated)
+	{
+		std::optional<std::string> inflated;
+
+		if (active_)
+		{
 			if (is_deflated(deflated))
 			{
-				z_stream stream = { 0 };
-				assert(inflateInit(&stream) == Z_OK);
+				std::lock_guard<std::mutex> lock(mutex_);
 
-				std::string inflated;
-				stream.next_in = (unsigned char*)deflated.data();
-				stream.avail_in = deflated.size();
+				stream_.next_in = (unsigned char*)deflated.data();
+				stream_.avail_in = deflated.size();
 
 				int result = Z_OK;
 
 				do
 				{
-					char buffer[1028] = { 0 };
+					char buffer[1024] = { 0 };
 
-					stream.next_out = reinterpret_cast<unsigned char*>(buffer);
-					stream.avail_out = sizeof(buffer);
+					stream_.next_out = reinterpret_cast<unsigned char*>(buffer);
+					stream_.avail_out = sizeof(buffer);
 
-					result = ::inflate(&stream, 0);
+					::inflate(&stream_, Z_NO_FLUSH);
 
-					inflated.append(buffer);
+					inflated.value().append(buffer);
 				} while (result == Z_OK);
-
-				/*
-					Z_BUF_ERROR indicates that the given buffer was too small for the inflated chunck.
-					It is not fatal and `::inflate` can be called once again with more output space.
-				*/
-				assert(result == Z_STREAM_END || result == Z_BUF_ERROR);
-				assert(inflateEnd(&stream) == Z_OK);
-
-				callback(std::move(inflated));
 			}
 			else
 			{
-				callback(deflated);
+				inflated = deflated;
 			}
-		}).detach();
+		}
+
+		return inflated;
 	}
 
-	bool Inflator::is_deflated(const std::string& deflated)
+	bool Inflator::is_deflated(const std::string_view& deflated)
 	{
 		if (deflated.size() < 4)
 		{
