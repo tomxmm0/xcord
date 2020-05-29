@@ -14,7 +14,6 @@ Currently not planned:
 * Shards
 
 ### Building
-##### Prequesistes 
   * Clone xcord into your folder of choice.
   * Download and configure [cmake](https://cmake.org/) for your operating system.  
   * Download and configure [vcpkg](https://github.com/microsoft/vcpkg) for your operating system.  
