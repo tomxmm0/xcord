@@ -2,7 +2,6 @@
 
 #include <xcord/export.hpp>
 
-#include <memory>
 #include <string>
 #include <functional>
 #include <optional>
@@ -54,6 +53,8 @@ namespace xcord
 
 		void send_op(const int op);
 		void send_op(const int op, rapidjson::Value& data, const std::string_view event_name = "");
+
+		void send_raw(const rapidjson::Document& document);
 
 		inline void on_message(const message_cb& callback)
 		{

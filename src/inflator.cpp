@@ -1,4 +1,6 @@
 #include <array>
+#include <memory>
+
 #include <xcord/websocket.hpp>
 
 namespace xcord
@@ -27,6 +29,7 @@ namespace xcord
 		{
 			if (is_deflated(deflated))
 			{
+				std::string str;
 				std::lock_guard<std::mutex> lock(mutex_);
 
 				stream_.next_in = (unsigned char*)deflated.data();
@@ -36,15 +39,17 @@ namespace xcord
 
 				do
 				{
-					char buffer[1024] = { 0 };
+					char buffer[4096] = { 0 };
 
 					stream_.next_out = reinterpret_cast<unsigned char*>(buffer);
-					stream_.avail_out = sizeof(buffer);
+					stream_.avail_out = sizeof(buffer) - 1; 
 
-					::inflate(&stream_, Z_NO_FLUSH);
+					result = ::inflate(&stream_, Z_NO_FLUSH);
 
-					inflated.value().append(buffer);
-				} while (result == Z_OK || result == Z_BUF_ERROR);
+					str.append(buffer);
+				} while (result == Z_OK);
+
+				inflated = std::move(str);
 			}
 			else
 			{

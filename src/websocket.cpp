@@ -1,17 +1,13 @@
 #include <algorithm>
 #include <future>
-#include <cassert>
 
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
-#include <fmt/printf.h>
 #include <fmt/format.h>
 
 #include <xcord/discord.hpp>
 #include <xcord/websocket.hpp>
-
-#undef GetObject
 
 namespace xcord
 {
@@ -36,7 +32,7 @@ namespace xcord
 				if (inflated)
 				{
 					rapidjson::Document document;
-					document.Parse(inflated.value().data());
+					document.Parse(inflated.value().data(), inflated.value().size());
 
 					if (document.IsObject())
 					{
@@ -66,7 +62,7 @@ namespace xcord
 
 	Websocket::~Websocket()
 	{
-		cleanup_();
+		close();
 	}
 
 	void Websocket::connect()
@@ -80,7 +76,7 @@ namespace xcord
 			return;
 		}
 
-		const auto con = client_.get_connection(fmt::format("{}&encoding=json", gateway), e);
+		const auto con = client_.get_connection(fmt::format("{}&encoding=json&compress=zlib-stream", gateway), e);
 
 		if (e)
 		{
@@ -130,6 +126,16 @@ namespace xcord
 			document.AddMember("t", rapidjson::Value(event_name.data(), event_name.size()), allocator);
 		}
 
+		rapidjson::StringBuffer buffer;
+		rapidjson::Writer writer(buffer);
+
+		document.Accept(writer);
+
+		client_.send(handle_, buffer.GetString(), websocketpp::frame::opcode::text);
+	}
+
+	void Websocket::send_raw(const rapidjson::Document& document)
+	{
 		rapidjson::StringBuffer buffer;
 		rapidjson::Writer writer(buffer);
 
