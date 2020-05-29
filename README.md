@@ -1,10 +1,10 @@
 # xcord
 Yet another C++ Discord library
 
-#### Usage
+### Usage
 TODO
 
-#### Features (or lack thereof)
+### Features (or lack thereof)
 * Fast
 * Asynchronous
 * Thread safe
@@ -13,7 +13,7 @@ Currently not planned:
 * Voice
 * Shards
 
-#### Building
+### Building
 ##### Prequesistes 
   * Clone xcord into your folder of choice.
   * Download and configure [cmake](https://cmake.org/) for your operating system.  
