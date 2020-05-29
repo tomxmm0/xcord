@@ -1,9 +1,20 @@
 # xcord
 Yet another C++ Discord library
 
-### Building
+#### Usage
+TODO
 
-#### Prequesistes 
+#### Features (or lack thereof)
+* Fast
+* Asynchronous
+* Thread safe
+
+Currently not planned:
+* Voice
+* Shards
+
+#### Building
+##### Prequesistes 
   * Clone xcord into your folder of choice.
   * Download and configure [cmake](https://cmake.org/) for your operating system.  
   * Download and configure [vcpkg](https://github.com/microsoft/vcpkg) for your operating system.  
