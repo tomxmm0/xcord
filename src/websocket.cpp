@@ -1,12 +1,17 @@
 #include <algorithm>
 #include <future>
+#include <cassert>
 
-#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+
 #include <fmt/printf.h>
 #include <fmt/format.h>
 
 #include <xcord/discord.hpp>
 #include <xcord/websocket.hpp>
+
+#undef GetObject
 
 namespace xcord
 {
@@ -30,7 +35,26 @@ namespace xcord
 
 				if (inflated)
 				{
-					fmt::print("{}\n", inflated.value());
+					rapidjson::Document document;
+					document.Parse(inflated.value().data());
+
+					if (document.IsObject())
+					{
+						if (sequence_ == -1)
+						{
+							if (document.HasMember("s"))
+							{
+								const auto& s = document["s"];
+
+								if (s.IsInt())
+								{
+									sequence_ = s.GetInt();
+								}
+							}
+						}
+
+						message_cb_(document);
+					}
 				}
 				else
 				{
@@ -73,6 +97,47 @@ namespace xcord
 		cleanup_();
 	}
 
+	void Websocket::send_op(const int op)
+	{
+		rapidjson::Value data;
+		data.SetNull();
+
+		send_op(op, data);
+	}
+
+	void Websocket::send_op(const int op, rapidjson::Value& data, const std::string_view event_name /* = "" */)
+	{
+		rapidjson::Document document;
+		document.SetObject();
+
+		auto& allocator = document.GetAllocator();
+
+		document.AddMember("op", rapidjson::Value(op), allocator);
+
+		const auto s = sequence();
+		rapidjson::Value s_value;
+
+		if (s != -1)
+		{
+			s_value.SetInt(s);
+		}
+
+		document.AddMember("s", s_value, allocator);
+		document.AddMember("d", data, allocator);
+
+		if (!event_name.empty())
+		{
+			document.AddMember("t", rapidjson::Value(event_name.data(), event_name.size()), allocator);
+		}
+
+		rapidjson::StringBuffer buffer;
+		rapidjson::Writer writer(buffer);
+
+		document.Accept(writer);
+
+		client_.send(handle_, buffer.GetString(), websocketpp::frame::opcode::text);
+	}
+
 	void Websocket::cleanup_()
 	{
 		if (connected_)
@@ -82,5 +147,11 @@ namespace xcord
 
 			connected_ = false;
 		}
+	}
+
+	int Websocket::sequence() const
+	{
+		std::lock_guard<std::mutex> lock(mutex_);
+		return sequence_;
 	}
 }

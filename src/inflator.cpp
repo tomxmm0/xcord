@@ -44,7 +44,7 @@ namespace xcord
 					::inflate(&stream_, Z_NO_FLUSH);
 
 					inflated.value().append(buffer);
-				} while (result == Z_OK);
+				} while (result == Z_OK || result == Z_BUF_ERROR);
 			}
 			else
 			{

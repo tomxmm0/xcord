@@ -1,7 +1,11 @@
 #pragma once
 
 #include <xcord/export.hpp>
+
 #include <string>
+#include <thread>
+
+#include <rapidjson/document.h>
 
 #include <xcord/websocket.hpp>
 
@@ -20,5 +24,9 @@ namespace xcord
 		void close();
 	private:
 		Websocket websocket_;
+		void handle_ws_message(const rapidjson::Document& document);
+
+		std::atomic_bool heartbeat_active_ = false;
+		std::thread heartbeat_;
 	};
 }
