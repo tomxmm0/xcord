@@ -6,6 +6,7 @@
 
 #include <fmt/printf.h>
 
+#include <xcord/user.hpp>
 #include <xcord/client.hpp>
 
 using websocketpp::lib::placeholders::_1;
@@ -13,29 +14,29 @@ using websocketpp::lib::bind;
 
 namespace xcord
 {
-	Client::Client()
+	client::client()
 	{
 		websocket_.on_message([this](const rapidjson::Document& document) -> void {
 			handle_ws_message(document);
 		});
 	}
 
-	Client::~Client()
+	client::~client()
 	{
 		close();
 	}
 
-	void Client::login(const std::string_view token)
+	void client::login(const std::string_view token)
 	{
 		token_ = token;
 	}
 	
-	void Client::run()
+	void client::run()
 	{
 		websocket_.connect();
 	}
 
-	void Client::close()
+	void client::close()
 	{
 		if (heartbeat_active_)
 		{
@@ -46,13 +47,13 @@ namespace xcord
 		websocket_.close();
 	}
 
-	std::string_view Client::token() const
+	std::string_view client::token() const
 	{
 		std::lock_guard<std::mutex> lock(mutex_);
 		return token_;
 	}
 
-	void Client::handle_ws_message(const rapidjson::Document& document)
+	void client::handle_ws_message(const rapidjson::Document& document)
 	{
 		if (document.HasMember("op"))
 		{
@@ -119,17 +120,17 @@ namespace xcord
 		}
 	}
 
-	void Client::handle_dispatch(const rapidjson::Value& data, const std::string_view event_name)
+	void client::handle_dispatch(const rapidjson::Value& data, const std::string_view event_name)
 	{
-		rapidjson::StringBuffer buffer;
-		rapidjson::Writer writer(buffer);
-
-		data.Accept(writer);
-
-		fmt::print("{} -> {}\n\n", event_name, buffer.GetString());
+		if (event_name == "READY")
+		{
+			// shitcode
+			user_.~user();
+			new (&user_) user(data["user"]);
+		}
 	}
 
-	void Client::identify()
+	void client::identify()
 	{
 		rapidjson::Document document;
 		document.SetObject();
@@ -177,7 +178,7 @@ namespace xcord
 		websocket_.send_raw(document);
 	}
 
-	void Client::send_heartbeat()
+	void client::send_heartbeat()
 	{
 		const auto sequence = websocket_.sequence();
 		auto value = rapidjson::Value();

@@ -11,7 +11,7 @@
 
 namespace xcord
 {
-	Websocket::Websocket()
+	websocket::websocket()
 	{
 		client_.clear_access_channels(websocketpp::log::alevel::all);
 		client_.init_asio();
@@ -60,12 +60,12 @@ namespace xcord
 		});
 	}
 
-	Websocket::~Websocket()
+	websocket::~websocket()
 	{
 		close();
 	}
 
-	void Websocket::connect()
+	void websocket::connect()
 	{
 		websocketpp::lib::error_code e;
 
@@ -88,12 +88,12 @@ namespace xcord
 		client_.run();
 	}
 
-	void Websocket::close()
+	void websocket::close()
 	{
 		cleanup_();
 	}
 
-	void Websocket::send_op(const int op)
+	void websocket::send_op(const int op)
 	{
 		rapidjson::Value data;
 		data.SetNull();
@@ -101,7 +101,7 @@ namespace xcord
 		send_op(op, data);
 	}
 
-	void Websocket::send_op(const int op, rapidjson::Value& data, const std::string_view event_name /* = "" */)
+	void websocket::send_op(const int op, rapidjson::Value& data, const std::string_view event_name /* = "" */)
 	{
 		rapidjson::Document document;
 		document.SetObject();
@@ -129,7 +129,7 @@ namespace xcord
 		send_raw(document);
 	}
 
-	void Websocket::send_raw(const rapidjson::Document& document)
+	void websocket::send_raw(const rapidjson::Document& document)
 	{
 		rapidjson::StringBuffer buffer;
 		rapidjson::Writer writer(buffer);
@@ -139,7 +139,7 @@ namespace xcord
 		client_.send(handle_, buffer.GetString(), websocketpp::frame::opcode::text);
 	}
 
-	void Websocket::cleanup_()
+	void websocket::cleanup_()
 	{
 		if (connected_)
 		{
@@ -150,7 +150,7 @@ namespace xcord
 		}
 	}
 
-	int Websocket::sequence() const
+	int websocket::sequence() const
 	{
 		std::lock_guard<std::mutex> lock(mutex_);
 		return sequence_;

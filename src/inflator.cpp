@@ -5,7 +5,7 @@
 
 namespace xcord
 {
-	Inflator::Inflator()
+	inflator::inflator()
 	{
 		if (inflateInit(&stream_) == Z_OK)
 		{
@@ -13,7 +13,7 @@ namespace xcord
 		}
 	}
 
-	Inflator::~Inflator()
+	inflator::~inflator()
 	{
 		active_ = false;
 
@@ -21,7 +21,7 @@ namespace xcord
 		inflateEnd(&stream_);
 	}
 
-	std::optional<std::string> Inflator::inflate(const std::string_view deflated)
+	std::optional<std::string> inflator::inflate(const std::string_view deflated)
 	{
 		if (active_)
 		{
@@ -58,7 +58,7 @@ namespace xcord
 		return std::nullopt;
 	}
 
-	bool Inflator::is_deflated(const std::string_view deflated)
+	bool inflator::is_deflated(const std::string_view deflated)
 	{
 		if (deflated.size() < 4)
 		{

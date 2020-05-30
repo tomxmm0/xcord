@@ -15,14 +15,14 @@
 
 namespace xcord
 {
-	class EXPORT Inflator
+	class EXPORT inflator
 	{
 	public:
-		Inflator();
-		~Inflator();
+		inflator();
+		~inflator();
 
-		explicit Inflator(const Inflator&) = default; Inflator& operator=(const Inflator&) = default;
-		explicit Inflator(Inflator&&) = default; Inflator& operator=(Inflator&&) = default;
+		explicit inflator(const inflator&) = default; inflator& operator=(const inflator&) = default;
+		explicit inflator(inflator&&) = default; inflator& operator=(inflator&&) = default;
 
 		std::optional<std::string> inflate(const std::string_view deflated);
 		static bool is_deflated(const std::string_view deflated);
@@ -33,7 +33,7 @@ namespace xcord
 		std::atomic_bool active_ = false;
 	};
 
-	class EXPORT Websocket
+	class EXPORT websocket
 	{
 	public:
 		using ws_client = websocketpp::client<websocketpp::config::asio_tls_client>;
@@ -42,11 +42,11 @@ namespace xcord
 		using message_ptr = websocketpp::config::asio_tls_client::message_type::ptr;
 		using message_cb = std::function<void(const rapidjson::Document&)>;
 
-		Websocket();
-		~Websocket();
+		websocket();
+		~websocket();
 
-		explicit Websocket(const Websocket&) = default; Websocket& operator=(const Websocket&) = default;
-		explicit Websocket(Websocket&&) = default; Websocket& operator=(Websocket&&) = default;
+		explicit websocket(const websocket&) = default; websocket& operator=(const websocket&) = default;
+		explicit websocket(websocket&&) = default; websocket& operator=(websocket&&) = default;
 
 		void connect();
 		void close();
@@ -66,7 +66,7 @@ namespace xcord
 		ws_client client_;
 		ws_handle handle_;
 
-		Inflator inflator_;
+		inflator inflator_;
 
 		message_cb message_cb_;
 

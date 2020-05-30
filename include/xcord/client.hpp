@@ -5,21 +5,23 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#include <unordered_set>
 
 #include <rapidjson/document.h>
 
 #include <xcord/websocket.hpp>
+#include <xcord/user.hpp>
 
 namespace xcord
 {
-	class EXPORT Client
+	class EXPORT client
 	{
 	public:
-		Client();
-		~Client();
+		client();
+		~client();
 
-		explicit Client(const Client&) = default; Client& operator=(const Client&) = default;
-		explicit Client(Client&&) = default; Client& operator=(Client&&) = default;
+		explicit client(const client&) = default; client& operator=(const client&) = default;
+		explicit client(client&&) = default; client& operator=(client&&) = default;
 
 		void login(const std::string_view token);
 
@@ -28,7 +30,9 @@ namespace xcord
 
 		std::string_view token() const;
 	private:
-		Websocket websocket_;
+		websocket websocket_;
+		user user_;
+
 		mutable std::mutex mutex_;
 
 		void handle_ws_message(const rapidjson::Document& document);
