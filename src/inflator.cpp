@@ -21,10 +21,8 @@ namespace xcord
 		inflateEnd(&stream_);
 	}
 
-	std::optional<std::string> Inflator::inflate(const std::string& deflated)
+	std::optional<std::string> Inflator::inflate(const std::string_view deflated)
 	{
-		std::optional<std::string> inflated;
-
 		if (active_)
 		{
 			if (is_deflated(deflated))
@@ -49,18 +47,18 @@ namespace xcord
 					str.append(buffer);
 				} while (result == Z_OK);
 
-				inflated = std::move(str);
+				return str.data();
 			}
 			else
 			{
-				inflated = deflated;
+				return deflated.data();
 			}
 		}
 
-		return inflated;
+		return std::nullopt;
 	}
 
-	bool Inflator::is_deflated(const std::string_view& deflated)
+	bool Inflator::is_deflated(const std::string_view deflated)
 	{
 		if (deflated.size() < 4)
 		{

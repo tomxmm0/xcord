@@ -24,8 +24,8 @@ namespace xcord
 		explicit Inflator(const Inflator&) = default; Inflator& operator=(const Inflator&) = default;
 		explicit Inflator(Inflator&&) = default; Inflator& operator=(Inflator&&) = default;
 
-		std::optional<std::string> inflate(const std::string& deflated);
-		static bool is_deflated(const std::string_view& deflated);
+		std::optional<std::string> inflate(const std::string_view deflated);
+		static bool is_deflated(const std::string_view deflated);
 	private:
 		z_stream stream_ = { 0 };
 

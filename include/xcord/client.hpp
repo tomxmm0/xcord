@@ -21,12 +21,12 @@ namespace xcord
 		explicit Client(const Client&) = default; Client& operator=(const Client&) = default;
 		explicit Client(Client&&) = default; Client& operator=(Client&&) = default;
 
-		void login(const std::string& token);
+		void login(const std::string_view token);
 
 		void run();
 		void close();
 
-		const std::string_view token() const;
+		std::string_view token() const;
 	private:
 		Websocket websocket_;
 		mutable std::mutex mutex_;

@@ -126,12 +126,7 @@ namespace xcord
 			document.AddMember("t", rapidjson::Value(event_name.data(), event_name.size()), allocator);
 		}
 
-		rapidjson::StringBuffer buffer;
-		rapidjson::Writer writer(buffer);
-
-		document.Accept(writer);
-
-		client_.send(handle_, buffer.GetString(), websocketpp::frame::opcode::text);
+		send_raw(document);
 	}
 
 	void Websocket::send_raw(const rapidjson::Document& document)

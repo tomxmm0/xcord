@@ -25,7 +25,7 @@ namespace xcord
 		close();
 	}
 
-	void Client::login(const std::string& token)
+	void Client::login(const std::string_view token)
 	{
 		token_ = token;
 	}
@@ -46,7 +46,7 @@ namespace xcord
 		websocket_.close();
 	}
 
-	const std::string_view Client::token() const
+	std::string_view Client::token() const
 	{
 		std::lock_guard<std::mutex> lock(mutex_);
 		return token_;
